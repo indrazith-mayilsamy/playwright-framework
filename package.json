@@ -1,0 +1,32 @@
+{
+  "name": "playwright-framework",
+  "version": "1.0.0",
+  "description": "Customized playwright framework",
+  "homepage": "https://github.com/indrazith-mayilsamy/playwright-framework#readme",
+  "bugs": {
+    "url": "https://github.com/indrazith-mayilsamy/playwright-framework/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/indrazith-mayilsamy/playwright-framework.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "pnpm exec playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/node": "^24.1.0",
+    "playwright": "^1.54.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "fs": "0.0.1-security",
+    "xlsx": "^0.18.5"
+  }
+}
