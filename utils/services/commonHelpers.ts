@@ -13,7 +13,6 @@ let defaultPath = path.join(process.cwd(), "data/run-time")
  * @returns The full path of the written file.
  * @throws If writing fails, throws an Error with details.
  */
-
 export async function JSONWriter(fileData: any, fileName: string, filePath?: string) {
     try {
         const folderPath = filePath || defaultPath;
@@ -36,7 +35,6 @@ export async function JSONWriter(fileData: any, fileName: string, filePath?: str
  * @returns Parsed JSON content.
  * @throws If reading or parsing fails.
  */
-
 export async function JSONReader(filePath: string) {
     try {
         const content = await fs.promises.readFile(filePath, 'utf-8');
@@ -54,7 +52,6 @@ export async function JSONReader(filePath: string) {
  * @param header - Row number (1-based) that contains the headers.
  * @returns Array of row objects where keys come from the header row.
  */
-
 export async function excelReaderSingleSheet(file: string, sheet: string, header: number = 1) {
     try {
         let resultData: Record<string, string>[] = [];
@@ -94,7 +91,6 @@ export async function excelReaderSingleSheet(file: string, sheet: string, header
  * @param headersBySheet - Object mapping sheet names to their 1-based header row number.
  * @returns An object where keys are sheet names and values are arrays of row objects.
  */
-
 export async function excelReaderAllSheets(file: string, headerBySheet: Record<string, number> = {}) {
     try {
         const resultData: Record<string, Record<string, string>[]> = {};
@@ -122,4 +118,69 @@ export async function excelReaderAllSheets(file: string, headerBySheet: Record<s
     } catch (error: any) {
         throw new Error(`Error while reading the excel file: ${error.message}`);
     }
+};
+
+/**
+ * Validates an email address format.
+ *
+ * @param email - The email address to validate.
+ * @returns true if the email is valid, false otherwise.
+ * @throws If validation fails, throws an Error with details.
+ */
+export async function emailVefification(email: string) {
+    try {
+        if (!email) return false;
+        const hasValidLength = email.length >= 5 && email.length <= 254;
+        const hasAtSymbol = email.includes('@');
+        const hasDot = email.includes('.');
+        const onlyOneAtSymbol = email.split('@').length === 2;
+        const hasValidStartEnd = !email.startsWith('.') && !email.endsWith('.') && !email.startsWith('@') && !email.endsWith('@');
+        const atBeforeDot = email.indexOf('@') < email.lastIndexOf('.');
+        const hasConsecutiveDots = !email.includes('..');
+        const invalidDotafterAt = email.includes('@.') || email.includes('.@');
+        const hasValidFormat = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+        const maxConsecutiveDots = email.split('.').length - 1 <= 3;
+        return hasValidLength && hasAtSymbol && hasDot && onlyOneAtSymbol && hasValidStartEnd && atBeforeDot && hasConsecutiveDots && !invalidDotafterAt && hasValidFormat && maxConsecutiveDots;
+    } catch (error: any) {
+        throw new Error(`Email verification failed: ${error.message}`);
+    };
+};
+
+/**
+ * Validates a string to ensure it does not contain numbers or special characters.
+ *
+ * @param str - The string to validate.
+ * @returns true if the string is valid, false otherwise.
+ * @throws If validation fails, throws an Error with details.
+ */
+export async function toEnsureNoNumberAndSpecialChar(str: string) {
+    try {
+        if (!str) return false;
+        const hasNoNumbers = !/\d/.test(str);
+        const hasNoSpecialChars = /^(?![\.\-_])([a-zA-Z\s\-_]+)(?<![\.\-_])$/.test(str);
+        const noInvalidStartOrEnd = !/^[._-]/.test(str) && !/[._-]$/.test(str);
+        const noConsecutiveSpecials = !/([._-])\1+/.test(str);
+        return hasNoNumbers && hasNoSpecialChars && noInvalidStartOrEnd && noConsecutiveSpecials;
+    } catch (error: any) {
+        throw new Error(`Validation failed: ${error.message}`);
+    }
+}
+
+/**
+ * Converts a string representation of an array into an actual array.
+ *
+ * @param value - The string to convert, expected to be in JSON array format (e.g., "[1, 2, 3]").
+ * @returns The parsed array.
+ * @throws If the string is not a valid JSON array, throws an Error with details.
+ */
+async function convertStringToArray(value: string) {
+    const trimmedValue = value.trim();
+    const isArray = trimmedValue.startsWith('[') && trimmedValue.endsWith(']');
+    if (isArray) {
+        try {
+            return JSON.parse(trimmedValue);
+        } catch (error: any) {
+            throw new Error(`Invalid JSON array format: ${error.message}`);
+        }
+    };
 };
