@@ -47,7 +47,7 @@ export class Logger {
         return logMessage(this.logFilePath, LOGLEVEL.INFO, message);
     };
 
-       /**
+    /**
      * Warn logs a message with WARN level.
      * @param message Message to log with INFO level.
      * @returns content of the log file.

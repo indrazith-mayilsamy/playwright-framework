@@ -7,6 +7,7 @@ import { defineConfig, PlaywrightTestConfig } from '@playwright/test';
 
 import dotenv from 'dotenv';
 import path from 'path';
+import { Configuration } from './utils/services/configuration';
 dotenv.config();
 
 const isHeaded = process.argv.includes('--headed')
@@ -24,7 +25,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: process.env.BASEURL,
+    baseURL: Configuration.get('URL'),
     video: 'retain-on-failure',
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
