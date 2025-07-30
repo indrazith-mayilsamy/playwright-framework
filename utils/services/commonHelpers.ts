@@ -83,7 +83,6 @@ export async function excelReaderSingleSheet(file: string, sheet: string, header
     }
 };
 
-
 /**
  * Reads multiple sheets from an Excel file with different header rows per sheet.
  *
@@ -146,6 +145,7 @@ export async function emailVefification(email: string) {
     };
 };
 
+
 /**
  * Validates a string to ensure it does not contain numbers or special characters.
  *
@@ -173,7 +173,7 @@ export async function toEnsureNoNumberAndSpecialChar(str: string) {
  * @returns The parsed array.
  * @throws If the string is not a valid JSON array, throws an Error with details.
  */
-async function convertStringToArray(value: string) {
+export async function convertStringToArray(value: string) {
     const trimmedValue = value.trim();
     const isArray = trimmedValue.startsWith('[') && trimmedValue.endsWith(']');
     if (isArray) {
@@ -184,3 +184,28 @@ async function convertStringToArray(value: string) {
         }
     };
 };
+
+/**
+ * Retrieves language-specific constants from a file.
+ *
+ * @param locale - The language code (e.g., 'en').
+ * @param fileName - The name of the file containing the constants (without extension).
+ * @returns An object containing the constants for the specified language.
+ * @throws If the file cannot be found or parsed, throws an Error with details.
+ */
+export async function getLang<T = Record<string, any>>(locale: string | undefined = process.env.LANGUAGE, fileName: string): Promise<T> {
+    try {
+        const langModule = await import(`../constant/${locale}/${fileName}.tsx`);
+        const langData = langModule.default;
+
+        if (typeof langData === 'string') {
+            return { [fileName.toUpperCase()]: langData } as T;
+        } else if (typeof langData === 'object') {
+            return langData as T;
+        } else {
+            throw new Error(`Invalid language data format in ${fileName}.tsx`);
+        }
+    } catch (error: any) {
+        throw new Error(`Error loading language file: ${error.message}`);
+    }
+}

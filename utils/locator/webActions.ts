@@ -1,6 +1,6 @@
-import { Base } from "../services/baseTestFile";
+import { Base } from "../services/baseTestPage";
 import { Logger } from "../services/logger";
-import { WebController } from "../services/webContoller";
+import { WebController } from "./webContoller";
 
 /**
  * Actions class for web elements, extending Base for common functionalities.   
@@ -14,67 +14,67 @@ export class Actions extends Base {
     protected createLocator(locator: string) {
         return this.page.locator(locator).first();
     }
-
+    
     /**
      * Waits for an element to be in a specific state.
-     * @param contrl The WebController instance containing the locator and description.
+     * @param control The WebController instance containing the locator and description.
      * @param state  State to wait for (visible, hidden, attached, detached).
      * @param timeout Maximum time to wait for the element to be in the specified state.
      */
-    async waitFor(contrl: WebController, state: 'visible' | 'hidden' | 'attached' | 'detached', timeout: number = 10000) {
+    async waitFor(control: WebController, state: 'visible' | 'hidden' | 'attached' | 'detached', timeout: number = 10000) {
         try {
-            await contrl.controlLocator.waitFor({ state, timeout });
-            Logger.info(`ACTION: Waited for element ${contrl.locatorDescription} to be ${state}`);
+            await control.controlLocator.waitFor({ state, timeout });
+            Logger.info(`ACTION: Waited for element ${control.locatorDescription} to be ${state}`);
         } catch (error: any) {
-            Logger.error(`Error waiting for element with locator '${contrl.locatorDescription}': ${error.message}`);
+            Logger.error(`Error waiting for element with locator '${control.locatorDescription}': ${error.message}`);
             throw error;
         };
     };
 
     /**
      * Types text into a web element.
-     * @param contrl The WebController instance containing the locator and description.
+     * @param control The WebController instance containing the locator and description.
      * @param text The text to type into the element.
      */
-    async typeText(contrl: WebController, text: string) {
+    async typeText(control: WebController, text: string) {
         try {
-            await contrl.controlLocator.fill(text);
-            Logger.info(`ACTION: Enter '${text}' into ${contrl.locatorDescription}`);
+            await control.controlLocator.fill(text);
+            Logger.info(`ACTION: Enter '${text}' into ${control.locatorDescription}`);
         } catch (error: any) {
-            Logger.error(`Error typing text into element with locator '${contrl.locatorDescription}':   ${error.message}`);
+            Logger.error(`Error typing text into element with locator '${control.locatorDescription}':   ${error.message}`);
             throw error;
         }
     };
 
     /**
      * Types text into a web element with a delay (debounce).
-     * @param contrl The WebController instance containing the locator and description.
+     * @param control The WebController instance containing the locator and description.
      * @param text The text to type into the element.
      * @param delay Delay in milliseconds before typing the text.
      */
-    async typeTextWithDebounce(contrl: WebController, text: string, delay: number = 500) {
+    async typeTextWithDebounce(control: WebController, text: string, delay: number = 500) {
         try {
-            await contrl.controlLocator.fill(text);
-            Logger.info(`ACTION: Entered '${text}' into ${contrl.locatorDescription} with a delay of ${delay}ms`);
+            await control.controlLocator.fill(text);
+            Logger.info(`ACTION: Entered '${text}' into ${control.locatorDescription} with a delay of ${delay}ms`);
             await new Promise(resolve => setTimeout(resolve, delay));
         } catch (error: any) {
-            Logger.error(`Error typing text into element with locator '${contrl.locatorDescription}':  ${error.message}`);
+            Logger.error(`Error typing text into element with locator '${control.locatorDescription}':  ${error.message}`);
             throw error;
         }
     };
 
     /**
      * Retrieves the text content of a web element.
-     * @param contrl The WebController instance containing the locator and description.
+     * @param control The WebController instance containing the locator and description.
      * @returns The text content of the element.
      */
-    async getText(contrl: WebController): Promise<string> {
+    async getText(control: WebController): Promise<string> {
         try {
-            const text = await contrl.controlLocator.textContent();
-            Logger.info(`ACTION: Retrieved text from ${contrl.locatorDescription}: ${text}`);
+            const text = await control.controlLocator.textContent();
+            Logger.info(`ACTION: Retrieved text from ${control.locatorDescription}: ${text}`);
             return text || "";
         } catch (error: any) {
-            Logger.error(`Error retrieving text from element with locator '${contrl.locatorDescription}':   ${error.message}`);
+            Logger.error(`Error retrieving text from element with locator '${control.locatorDescription}':   ${error.message}`);
             throw error;
         }
     };
@@ -83,14 +83,43 @@ export class Actions extends Base {
      * Clicks on a web element.
      * @param locator The locator of the element to click.
      */
-    async clickButton(contrl: WebController) {
+    async clickButton(control: WebController) {
         try {
-            await contrl.controlLocator.click();
-            Logger.info(`ACTION: Clicked on ${contrl.locatorDescription}`);
+            await control.controlLocator.click();
+            Logger.info(`ACTION: Clicked on ${control.locatorDescription}`);
         } catch (error: any) {
-            Logger.error(`Error clicking on element with locator '${contrl.locatorDescription}': ${error.message}`);
+            Logger.error(`Error clicking on element with locator '${control.locatorDescription}': ${error.message}`);
             throw error;
         };
+    };
+
+
+    /**
+     * Clicks on a checkbox element.
+     * @param control The WebController instance containing the locator and description.
+     */
+    async clickChekbox(control: WebController) {
+        try {
+            await control.controlLocator.click();
+            Logger.info(`ACTION: Clicked on checkbox ${control.locatorDescription}`);
+        } catch (error: any) {
+            Logger.error(`Error clicking on checkbox with locator '${control.locatorDescription}': ${error.message}`);
+            throw error;
+        }
+    };
+
+    /**
+     * Clicks on a radio button element.
+     * @param control The WebController instance containing the locator and description.
+     */
+    async clickRadioButton(control: WebController) {
+        try {
+            await control.controlLocator.click();
+            Logger.info(`ACTION: Clicked on radio button ${control.locatorDescription}`);
+        } catch (error: any) {
+            Logger.error(`Error clicking on radio button with locator '${control.locatorDescription}': ${error.message}`);
+            throw error;
+        }
     };
 
     /**
@@ -138,6 +167,20 @@ export class Actions extends Base {
             await this.page.keyboard.press('Escape')
         };
     };
+
+    /**
+     * Scrolls to a web element.
+     * @param control The WebController instance containing the locator and description.
+     */
+    async scrollToElement(control: WebController) {
+        try {
+            await control.controlLocator.scrollIntoViewIfNeeded();
+            Logger.info(`ACTION: Scrolled to element ${control.locatorDescription}`);
+        } catch (error: any) {
+            Logger.error(`Error scrolling to element with locator '${control.locatorDescription}': ${error.message}`);
+            throw error;
+        }
+    }
 
     /**
      * Waits for the page to load completely.
