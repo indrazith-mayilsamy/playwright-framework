@@ -18,19 +18,19 @@ const browsers: string[] = process.env.BROWSER ? [process.env.BROWSER] : ["chrom
  */
 export default defineConfig({
   timeout: 150000,
-  testDir: path.join(process.cwd(), 'tests/testsOrder'),
+  testDir: path.join(process.cwd(), 'tests/testOrders'),
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: [['./utils/reporters/htmlReporter.ts']],
   use: {
     baseURL: Configuration.get('URL'),
     video: 'retain-on-failure',
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
     headless: isHeaded,
-    storageState: path.join(process.cwd(), "state.json")
+    // storageState: path.join(process.cwd(), "state.json")
   },
 
   /* Configure projects for major browsers */

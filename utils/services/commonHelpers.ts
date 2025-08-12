@@ -209,3 +209,17 @@ export async function getLang<T = Record<string, any>>(locale: string | undefine
         throw new Error(`Error loading language file: ${error.message}`);
     }
 }
+
+
+/**
+ * Function to write the data in excel file
+ * @param data Data to write in the sheet
+ * @param filePath The name of the file.
+ * @param sheetName Name of the sheet
+ */
+export async function writeXLSXFile(data: any[], filePath: string, sheetName: string) {
+    const workBook = xlsx.utils.book_new();
+    const workSheet = xlsx.utils.json_to_sheet(data);
+    xlsx.utils.book_append_sheet(workBook, workSheet, sheetName);
+    xlsx.writeFile(workBook, filePath);
+};
