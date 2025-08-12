@@ -16,6 +16,7 @@ export default class HtmlReporter implements Reporter {
 
     projectFolder: string = path.basename(process.cwd().toUpperCase());
     testEnvironment: string = process.env.TEST_ENVIRONMENT || "QA";
+    
 
     formatDate(date: Date): string {
         const options: Intl.DateTimeFormatOptions = {
@@ -36,13 +37,19 @@ export default class HtmlReporter implements Reporter {
     };
 
     onTestEnd(test: TestCase, result: TestResult): void {
+        let relativePath: string = "";
         this.screenShotPath = "";
         const isTime = this.formatDate(new Date());
         const module = test.parent.title || "";
         const screenShotPath = result.attachments.find(attachment => attachment.name === 'screenshot')?.path?.replace(/\\/g, '/') || "";
+        if (screenShotPath) {
+            const imgData = fs.readFileSync(screenShotPath);
+            relativePath = `data:image/png;base64,${imgData.toString('base64')}`;
+        } else {
+            relativePath = "N/A"
+        }
         const testDuration = result.duration / 1000 || 0;;
         this.totalExecutionTime += testDuration;
-
         let errorMessage = "";
         if (result.status === 'skipped') {
             errorMessage = result.error?.message || "Test was skipped due to an error occurring in a previous test.";
@@ -57,7 +64,7 @@ export default class HtmlReporter implements Reporter {
             DURATION: testDuration.toFixed(2) + 's',
             ERRORMESSAGE: errorMessage,
             EXECUTEDTIME: isTime,
-            SCREENSHOTPATH: screenShotPath || 'N/A'
+            SCREENSHOTPATH: relativePath || 'N/A'
         });
     };
 
@@ -79,7 +86,7 @@ export default class HtmlReporter implements Reporter {
         const totalTimeMinutes = (this.totalExecutionTime / 60).toFixed(2) + 'm';
 
         const projectBasePath = path.resolve(process.cwd()).replace(/\\/g, '/');
-        
+
         const statusColors = (data: string) => {
             switch (data.toLowerCase()) {
                 case 'passed':
@@ -130,6 +137,7 @@ export default class HtmlReporter implements Reporter {
             .replace(/{{executionTimeByStatus\.TimedOut}}/g, executionTimeByStatus.TimedOut)
             .replace(/{{executionTimeByStatus\.Interrupted}}/g, executionTimeByStatus.Interrupted)
             .replace(/{{totalExecutionTime}}/g, totalTimeFormatted)
+            .replace(/{{totalTimeMinutes}}/g, totalTimeMinutes)
             .replace(/{{results}}/g, this.results.map((row, index) => `
                 <tr>
                     <td>${index + 1}</td>
@@ -139,7 +147,7 @@ export default class HtmlReporter implements Reporter {
                     <td>${row.EXECUTEDTIME}</td>
                     <td style="color: ${statusColors(row.STATUS)};">${row.STATUS}</td>
                     <td>${row.ERRORMESSAGE || 'N/A'}</td>
-                    <td>${row.SCREENSHOTPATH !== 'N/A' ? `<a href="${row.SCREENSHOTPATH}">View Screenshot</a>` : 'N/A'}</td>
+                    <td>${row.SCREENSHOTPATH !== 'N/A' ? `<img src="${row.SCREENSHOTPATH}" /img>` : 'N/A'}</td>
                 </tr>`
             ).join(''))
             .replace(/{{projectBasePath}}/g, projectBasePath);
